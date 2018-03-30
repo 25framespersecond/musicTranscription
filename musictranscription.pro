@@ -11,7 +11,7 @@ requires(qtConfig(combobox))
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = tteststetse
+TARGET = musicTranscription
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -32,7 +32,7 @@ SOURCES += \
         wavfile.cpp \
     fouriertransform.cpp \
     graphbuilder.cpp \
-    notesdata.cpp
+    notedetector.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -42,7 +42,7 @@ HEADERS += \
     iaudiodata.h \
     timeaudiodata.h \
     frequencyaudiodata.h \
-    notesdata.h
+    notedetector.h
 
 FORMS += \
         mainwindow.ui

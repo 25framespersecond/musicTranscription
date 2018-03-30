@@ -1,13 +1,13 @@
-#include "notesdata.h"
+#include "notedetector.h"
 #include <QDebug>
 #include <cmath>
 
 //f0 is a fundumental frequency of C0 lowest note this algorithm can detect
-const double NotesData::f0 = 16.35;
+const double NoteDetector::f0 = 16.35;
 //names of notes
-const char* NotesData::notes[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+const char* NoteDetector::notes[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
-QString NotesData::noteName(double frequancy)
+QString NoteDetector::noteName(double frequancy)
 {
     int noteNum = round((12*log(frequancy/f0)) / log(2));
     //note can't be lower than C0
@@ -19,7 +19,7 @@ QString NotesData::noteName(double frequancy)
     return string;
 }
 
-size_t NotesData::harmonicProductSpectrum(unsigned int harmonics) const
+size_t NoteDetector::harmonicProductSpectrum(unsigned int harmonics) const
 {
     size_t maxIndex = m_data.getData().size()/harmonics;
     std::vector<double> result = m_data.getData();
@@ -50,7 +50,7 @@ size_t NotesData::harmonicProductSpectrum(unsigned int harmonics) const
 //then removes it from spectrum and looks for next note
 //if next note isn't different from any priviously
 //found note algorithm stops
-void NotesData::findNotes(size_t maxNotes)
+void NoteDetector::findNotes(size_t maxNotes)
 {
     //maxNotes is used to avoid infinitely looking for notes
     for (size_t i = 0; i < maxNotes; ++i)
@@ -85,7 +85,7 @@ void NotesData::findNotes(size_t maxNotes)
     }
 }
 
-bool NotesData::noteIsFound(size_t freqIndex) const
+bool NoteDetector::noteIsFound(size_t freqIndex) const
 {
     //checking if frequency was already found before
     if (m_freqIndexes.count(freqIndex - 1) || m_freqIndexes.count(freqIndex + 1))
@@ -94,7 +94,7 @@ bool NotesData::noteIsFound(size_t freqIndex) const
         return false;
 }
 
-std::map<QString, double> NotesData::getNotes() const
+std::map<QString, double> NoteDetector::getNotes() const
 {
     std::map<QString, double> result;
     auto it = m_freqIndexes.begin();
@@ -102,7 +102,7 @@ std::map<QString, double> NotesData::getNotes() const
     {
         double frequency = it->first * m_data.getInterval();
         qDebug() << frequency;
-        QString name = NotesData::noteName(frequency);
+        QString name = NoteDetector::noteName(frequency);
         result.insert(std::pair<QString, double>(name, it->second));
     }
     return std::move(result);

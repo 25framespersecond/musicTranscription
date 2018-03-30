@@ -57,7 +57,7 @@ void MainWindow::on_pushButton_clicked()
     for (size_t sample = 10000; sample < m_timeData.getData().size(); sample += 10000)
     {
     auto freq = FourierTransform::cooleyTukeyFFT(m_timeData, sample-10000, sample);
-    NotesData notes(freq);
+    NoteDetector notes(freq);
     notes.findNotes(20);
     auto notesFreq = notes.getNotes();
     auto it = notesFreq.begin();

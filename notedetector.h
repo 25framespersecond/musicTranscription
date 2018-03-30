@@ -1,5 +1,5 @@
-#ifndef NOTESDATA_H
-#define NOTESDATA_H
+#ifndef NOTEDETECTOR_H
+#define NOTEDETECTOR_H
 
 #include <vector>
 #include <map>
@@ -7,10 +7,10 @@
 #include <QString>
 #include "frequencyaudiodata.h"
 
-class NotesData
+class NoteDetector
 {
 public:
-    NotesData(const FrequencyAudioData & data) : m_data(data) {}
+    NoteDetector(const FrequencyAudioData & data) : m_data(data) {}
     size_t harmonicProductSpectrum(unsigned int harmonics) const;
     void findNotes(size_t maxNotes);
     std::map<QString, double> getNotes() const;
@@ -25,4 +25,4 @@ private:
     static const char* notes[];
 };
 
-#endif // NOTESDATA_H
+#endif // NOTEDETECTOR_H

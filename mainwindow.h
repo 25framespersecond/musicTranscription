@@ -9,7 +9,7 @@
 #include "graphbuilder.h"
 #include "timeaudiodata.h"
 #include "frequencyaudiodata.h"
-#include "notesdata.h"
+#include "notedetector.h"
 
 namespace Ui {
 class MainWindow;

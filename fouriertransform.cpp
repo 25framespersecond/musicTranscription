@@ -47,10 +47,18 @@ FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, 
         dataSize = fftSize;
 
     //applying Hann Window
-    std::vector<double> input = hannWindow(audio.getData(), start, dataSize);
+    std::vector<double> input(dataSize);
+    for (size_t index = 0; index < dataSize; ++index)
+    {
+        double multiplier = 0.5 * (1 - cos(2*PI*index/(dataSize-1)));
+        input[index] = multiplier * audio.getData()[start+index];
+    }
 
     //zero padding for fft size
-    zeroPadding(input, fftSize);
+    for (size_t index = input.size(); index < fftSize; ++index)
+    {
+        input.push_back(0);
+    }
 
     //rearranging input array into reverse bit order array, also converting it to complex numbers
     std::vector<Complex> output(fftSize);
@@ -112,25 +120,5 @@ void FourierTransform::ctfft(std::vector<Complex> &x)
         }
         halfStep = step;
         step <<= 1;
-    }
-}
-
-std::vector<double> FourierTransform::hannWindow(const std::vector<double> &data, size_t start, size_t dataSize)
-{
-    std::vector<double> result(dataSize);
-    for (size_t index = 0; index < dataSize; ++index)
-    {
-        double multiplier = 0.5 * (1 - cos(2*PI*index/(dataSize-1)));
-        result[index] = multiplier * data[start+index];
-    }
-    return std::move(result);
-}
-
-void FourierTransform::zeroPadding(std::vector<double> &data, size_t fftSize)
-{
-    data.reserve(data.size()+fftSize);
-    for (size_t index = data.size(); index < fftSize; ++index)
-    {
-        data.push_back(0);
     }
 }

@@ -50,7 +50,7 @@ void MainWindow::on_pushButton_clicked()
 
     m_timeChart->plot(m_timeData, "Waveform");
 
-    m_freqData = FourierTransform::cooleyTukeyFFT(m_timeData, 0, 10000);
+    m_freqData = FourierTransform::cooleyTukeyFFT(m_timeData, 0, m_timeData.getData().size());
 
     m_freqChart->plot(m_freqData, "Frequencies");
 

@@ -13,6 +13,10 @@ GraphBuilder::GraphBuilder(QWidget *parent) :
 
 void GraphBuilder::plot(const IAudioData &data, const QString &name)
 {
+    //return if no data
+    if (data.getData().size() == 0)
+        return;
+
     QChart *prevChart = this->chart();
 
     QChart *chart = new QChart();

@@ -21,8 +21,6 @@ public:
 private:
     static size_t reverseBitOrder(size_t a);
     static void ctfft(std::vector<Complex> &x);
-    static std::vector<double> hannWindow(const std::vector<double> &data, size_t start, size_t dataSize);
-    static void zeroPadding(std::vector<double> &data, size_t fftSize);
 };
 
 

@@ -16,7 +16,7 @@ public:
     static FrequencyAudioData dft(const TimeAudioData &data, size_t start, size_t end);
 
     //Cooley-Tukey fast discrete fourier transform with O(NlogN) of data in range [start, end)
-    static FrequencyAudioData cooleyTukeyFFT(const TimeAudioData &data, size_t start, size_t end, unsigned int fftSizeFactor = 15);
+    static FrequencyAudioData cooleyTukeyFFT(const TimeAudioData &data, size_t start, size_t end, unsigned int fftSizeFactor = 16);
 
 private:
     static size_t reverseBitOrder(size_t a);

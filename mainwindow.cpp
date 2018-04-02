@@ -54,7 +54,7 @@ void MainWindow::on_pushButton_clicked()
 
     m_freqChart->plot(m_freqData, "Frequencies");
 
-    for (size_t sample = 100000; sample < m_timeData.getData().size(); sample += 20000)
+    for (size_t sample = 20000; sample < m_timeData.getData().size(); sample += 20000)
     {
     auto freq = FourierTransform::cooleyTukeyFFT(m_timeData, sample-20000, sample, 16);
     qDebug() << '\n';
@@ -62,5 +62,6 @@ void MainWindow::on_pushButton_clicked()
     auto it = notesFreq.begin();
     for( ; it != notesFreq.end(); ++it)
         qDebug() << it->first << " " << it->second;
+    m_freqChart->plot(freq, "Frequencies");
     }
 }

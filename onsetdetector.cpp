@@ -1,6 +1,8 @@
 #include "onsetdetector.h"
 #include <cassert>
 #include <cmath>
+#include <algorithm>
+#include <QDebug>
 
 TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, unsigned int window, unsigned int overlap)
 {
@@ -19,7 +21,10 @@ TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, unsigned
         onsetFunction.push_back(diff);
         prevFreq = std::move(freq);
     }
-    return TimeAudioData(onsetFunction, timeData.getSampleRate()/overlap);
+    //normalize(onsetFunction);
+    auto peaks = findPeaks(onsetFunction, 2, 3, 20);
+
+    return TimeAudioData(peaks, timeData.getSampleRate()/overlap);
 }
 
 double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const FrequencyAudioData &fft2)
@@ -39,4 +44,26 @@ double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const Freque
     for (size_t index = 0; index < diff.size(); ++index)
         totalDiff += diff[index];
     return totalDiff;
+}
+
+std::vector<double> OnsetDetector::findPeaks(const std::vector<double> &func, double delta, double lambda, unsigned int window)
+{
+    std::vector<double> peaks = func;
+    for (size_t i = 0; i + window< func.size(); ++i)
+    {
+        double threshold = 0;
+        for (size_t j = i; j < i + window; ++j)
+            threshold += func[j];
+        threshold = lambda * threshold / window + delta;
+        if (func[i + window/2] <= threshold)
+            peaks[i + window/2] = 0;
+    }
+    return std::move(peaks);
+}
+
+void OnsetDetector::normalize(std::vector<double> &func)
+{
+    double max = *std::max_element(func.begin(), func.end());
+    for(auto &ref : func)
+        ref /= max;
 }

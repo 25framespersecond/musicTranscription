@@ -9,7 +9,7 @@
 class OnsetDetector
 {
 public:
-    static FrequencyAudioData detectOnset(const TimeAudioData &timeData, unsigned int window = 1024, unsigned int overlap = 512);
+    static TimeAudioData detectOnset(const TimeAudioData &timeData, unsigned int window = 1024, unsigned int overlap = 512);
 private:
     static double fftDifference(const FrequencyAudioData &fft1, const FrequencyAudioData &fft2);
 };

@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cmath>
 
-FrequencyAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, unsigned int window, unsigned int overlap)
+TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, unsigned int window, unsigned int overlap)
 {
     if (!window)
         window = 1024;
@@ -19,7 +19,7 @@ FrequencyAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, uns
         onsetFunction.push_back(diff);
         prevFreq = std::move(freq);
     }
-    return FrequencyAudioData(onsetFunction, timeData.getSampleRate()/overlap);
+    return TimeAudioData(onsetFunction, timeData.getSampleRate()/overlap);
 }
 
 double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const FrequencyAudioData &fft2)
@@ -29,7 +29,12 @@ double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const Freque
     //of two adjusted time windows and suming all bins
     std::vector<double> diff(fft1.size());
     for (size_t index = 0; index < fft1.size(); ++index)
-        diff[index] = abs(fft1.getData()[index] - fft2.getData()[index]);
+    {
+        diff[index] = fft1.getData()[index] - fft2.getData()[index];
+        if (diff[index] < 0)
+            diff[index] = 0;
+    }
+
     double totalDiff = 0;
     for (size_t index = 0; index < diff.size(); ++index)
         totalDiff += diff[index];

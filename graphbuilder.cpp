@@ -14,7 +14,7 @@ GraphBuilder::GraphBuilder(QWidget *parent) :
 void GraphBuilder::plot(const IAudioData &data, const QString &name)
 {
     //return if no data
-    if (data.getData().size() == 0)
+    if (data.size() == 0)
         return;
 
     QChart *prevChart = this->chart();
@@ -25,8 +25,8 @@ void GraphBuilder::plot(const IAudioData &data, const QString &name)
 
     double currX = 0.0;
     //20000 is an aproximate number of points that would be drawn
-    int precision = ((int)data.getData().size()/20000)+1;
-    for(size_t index =0; index < data.getData().size(); index += precision)
+    int precision = ((int)data.size()/20000)+1;
+    for(size_t index =0; index < data.size(); index += precision)
     {
         series->append(currX, data.getData()[index]);
         currX += data.getInterval()*precision;

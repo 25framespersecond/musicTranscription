@@ -10,7 +10,7 @@ const double PI = 3.14159265359;
 FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, size_t start, size_t end)
 {
    std::vector<double> result;
-   if(start >= end || start >= audio.getData().size() || end > audio.getData().size())
+   if(start >= end || start >= audio.size() || end > audio.size())
        return FrequencyAudioData(result, audio.getSampleRate());
 
    size_t numOfElements = end-start;
@@ -35,7 +35,7 @@ FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, size_t star
 FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, size_t start, size_t end, unsigned int fftSizeFactor)
 {
     //return nothing if start and end are out of range
-    if(start >= end || start >= audio.getData().size() || end > audio.getData().size())
+    if(start >= end || start >= audio.size() || end > audio.size())
         return FrequencyAudioData(std::vector<double>(), audio.getSampleRate());
 
     //finding fftSize

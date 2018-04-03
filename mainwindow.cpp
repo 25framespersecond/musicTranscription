@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QGraphicsLayout>
 #include <QFrame>
+#include "onsetdetector.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,18 +51,10 @@ void MainWindow::on_pushButton_clicked()
 
     m_timeChart->plot(m_timeData, "Waveform");
 
-    m_freqData = FourierTransform::cooleyTukeyFFT(m_timeData, 0, m_timeData.getData().size());
+    m_freqData = FourierTransform::cooleyTukeyFFT(m_timeData, 0, m_timeData.size());
 
     m_freqChart->plot(m_freqData, "Frequencies");
 
-    for (size_t sample = 20000; sample < m_timeData.getData().size(); sample += 20000)
-    {
-    auto freq = FourierTransform::cooleyTukeyFFT(m_timeData, sample-20000, sample, 16);
-    qDebug() << '\n';
-    auto notesFreq = NoteDetector::findNotes(freq);
-    auto it = notesFreq.begin();
-    for( ; it != notesFreq.end(); ++it)
-        qDebug() << it->first << " " << it->second;
-    m_freqChart->plot(freq, "Frequencies");
-    }
+    auto onset = OnsetDetector::detectOnset(m_timeData);
+    m_freqChart->plot(onset, "Onset");
 }

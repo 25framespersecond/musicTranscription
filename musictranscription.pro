@@ -32,7 +32,8 @@ SOURCES += \
         wavfile.cpp \
     fouriertransform.cpp \
     graphbuilder.cpp \
-    notedetector.cpp
+    notedetector.cpp \
+    onsetdetector.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -42,7 +43,8 @@ HEADERS += \
     iaudiodata.h \
     timeaudiodata.h \
     frequencyaudiodata.h \
-    notedetector.h
+    notedetector.h \
+    onsetdetector.h
 
 FORMS += \
         mainwindow.ui

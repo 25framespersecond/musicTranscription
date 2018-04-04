@@ -30,7 +30,6 @@ TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, int wind
     auto it = peaks.begin();
     for ( ; it != peaks.end(); ++it)
     {
-        onsetFunction[*it] = 1;
     }
 
     return TimeAudioData(onsetFunction, timeData.getSampleRate()/overlap);

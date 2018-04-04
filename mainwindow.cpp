@@ -56,5 +56,6 @@ void MainWindow::on_pushButton_clicked()
     m_freqChart->plot(m_freqData, "Frequencies");
 
     auto onset = OnsetDetector::detectOnset(m_timeData);
+
     m_freqChart->plot(onset, "Onset");
 }

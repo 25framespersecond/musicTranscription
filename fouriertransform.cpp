@@ -32,16 +32,18 @@ FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, size_t star
    return FrequencyAudioData(result, audio.getSampleRate());
 }
 
-FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, size_t start, size_t end, unsigned int fftSizeFactor)
+FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, size_t start, size_t end, int fftSizeFactor)
 {
     //return nothing if start and end are out of range
     if(start >= end || start >= audio.size() || end > audio.size())
         return FrequencyAudioData(std::vector<double>(), audio.getSampleRate());
 
     //finding fftSize
+    if (fftSizeFactor <= 0)
+        fftSizeFactor = 1;
     size_t dataSize = end - start;
-    if (fftSizeFactor > sizeof(size_t)*8)
-        fftSizeFactor = sizeof(size_t)*8;
+    if (fftSizeFactor > sizeof(dataSize)*8)
+        fftSizeFactor = sizeof(dataSize)*8;
     size_t fftSize = static_cast<size_t>(1) << fftSizeFactor;
     if (dataSize > fftSize)
         dataSize = fftSize;

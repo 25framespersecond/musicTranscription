@@ -57,6 +57,11 @@ void GraphBuilder::plot(const IAudioData &data, const QString &name)
 
     double yMin = *std::min_element(data.getData().begin(), data.getData().end());
     double yMax = *std::max_element(data.getData().begin(), data.getData().end());
+    if (yMin >= yMax)
+    {
+        yMin = 0;
+        yMax = 1;
+    }
     axisY->setRange(yMin, yMax);
 
     chart->setAxisY(axisY, series);

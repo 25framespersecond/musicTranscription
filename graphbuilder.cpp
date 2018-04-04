@@ -26,7 +26,7 @@ void GraphBuilder::plot(const IAudioData &data, const QString &name)
     double currX = 0.0;
     //20000 is an aproximate number of points that would be drawn
     int precision = ((int)data.size()/20000)+1;
-    for(int64_t index =0; index < data.size(); index += precision)
+    for(size_t index =0; index < data.size(); index += precision)
     {
         series->append(currX, data.getData()[index]);
         currX += data.getInterval()*precision;

@@ -7,20 +7,20 @@ const double PI = 3.14159265359;
 
 //this function is made only for educational purposes
 //and should not be used as it's too expensive O(N^2)
-FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, int64_t start, int64_t end)
+FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, size_t start, size_t end)
 {
    std::vector<double> result;
    if(start >= end || start >= audio.size() || end > audio.size())
        return FrequencyAudioData(result, audio.getSampleRate());
 
-   int64_t numOfElements = end-start;
+   size_t numOfElements = end-start;
 
    double Wn = -(2 * PI) / (double)numOfElements;
-   for(int64_t freq = 0; freq <= numOfElements/2; ++freq)
+   for(size_t freq = 0; freq <= numOfElements/2; ++freq)
    {
        double Xreal = 0;
        double Ximag = 0;
-       for( int64_t index = 0; index < numOfElements; ++index)
+       for( size_t index = 0; index < numOfElements; ++index)
        {
            Xreal += audio.getData()[start+index]*cos(Wn*index*freq);
            Ximag += audio.getData()[start+index]*sin(Wn*index*freq);
@@ -32,32 +32,30 @@ FrequencyAudioData FourierTransform::dft(const TimeAudioData &audio, int64_t sta
    return FrequencyAudioData(result, audio.getSampleRate());
 }
 
-FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, int64_t start, int64_t end, int fftSizeFactor)
+FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, size_t start, size_t end, unsigned int fftSizeFactor)
 {
     //return nothing if start and end are out of range
     if(start >= end || start >= audio.size() || end > audio.size())
         return FrequencyAudioData(std::vector<double>(), audio.getSampleRate());
 
     //finding fftSize
-    int64_t dataSize = end - start;
-    if (fftSizeFactor <= 0)
-        fftSizeFactor = 1;
-    if (fftSizeFactor > sizeof(dataSize)*8)
-        fftSizeFactor = sizeof(dataSize)*8;
-    int64_t fftSize = static_cast<int64_t>(1) << fftSizeFactor;
+    size_t dataSize = end - start;
+    if (fftSizeFactor > sizeof(size_t)*8)
+        fftSizeFactor = sizeof(size_t)*8;
+    size_t fftSize = static_cast<size_t>(1) << fftSizeFactor;
     if (dataSize > fftSize)
         dataSize = fftSize;
 
     //applying Hann Window
     std::vector<double> input(dataSize);
-    for (int64_t index = 0; index < dataSize; ++index)
+    for (size_t index = 0; index < dataSize; ++index)
     {
         double multiplier = 0.5 * (1 - cos(2*PI*index/(dataSize-1)));
         input[index] = multiplier * audio.getData()[start+index];
     }
 
     //zero padding for fft size
-    for (int64_t index = static_cast<int64_t>(input.size()); index < fftSize; ++index)
+    for (size_t index = input.size(); index < fftSize; ++index)
     {
         input.push_back(0);
     }
@@ -78,7 +76,7 @@ FrequencyAudioData FourierTransform::cooleyTukeyFFT(const TimeAudioData &audio, 
     //geting magnitudes from vector of complex numbers and populating vector of doubles with it
     std::vector<double> result;
     result.reserve(fftSize);
-    for(int64_t index = 0; index < output.size()/2; ++index)
+    for(size_t index = 0; index < output.size()/2; ++index)
     {
         result.push_back(abs(output[index]));
     }

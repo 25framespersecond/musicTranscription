@@ -4,17 +4,17 @@
 #include <algorithm>
 #include <QDebug>
 
-TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, int window, int overlap)
+TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, unsigned int window, unsigned int overlap)
 {
-    if (window <= 0)
+    if (!window)
         window = 1024;
-    if (overlap <= 0)
+    if (!overlap)
         overlap = window/2;
     if (overlap > window)
         overlap = window;
     std::vector<double> onsetFunction;
     FrequencyAudioData prevFreq = FourierTransform::cooleyTukeyFFT(timeData, 0, window, 10);
-    for (int64_t index = overlap; index+window < timeData.size(); index += overlap)
+    for (size_t index = overlap; index+window < timeData.size(); index += overlap)
     {
         auto freq = FourierTransform::cooleyTukeyFFT(timeData, index, index + window, 10);
         double diff = fftDifference(freq, prevFreq);
@@ -33,7 +33,7 @@ double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const Freque
     //calculating difference between two freqency spectrums
     //of two adjusted time windows and suming all bins
     std::vector<double> diff(fft1.size());
-    for (int64_t index = 0; index < fft1.size(); ++index)
+    for (size_t index = 0; index < fft1.size(); ++index)
     {
         diff[index] = fft1.getData()[index] - fft2.getData()[index];
         if (diff[index] < 0)
@@ -41,18 +41,18 @@ double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const Freque
     }
 
     double totalDiff = 0;
-    for (int64_t index = 0; index < diff.size(); ++index)
+    for (size_t index = 0; index < diff.size(); ++index)
         totalDiff += diff[index];
     return totalDiff;
 }
 
-std::vector<double> OnsetDetector::findPeaks(const std::vector<double> &func, double delta, double lambda, int window)
+std::vector<double> OnsetDetector::findPeaks(const std::vector<double> &func, double delta, double lambda, unsigned int window)
 {
     std::vector<double> peaks = func;
-    for (int64_t i = 0; i + window< func.size(); ++i)
+    for (size_t i = 0; i + window< func.size(); ++i)
     {
         double threshold = 0;
-        for (int64_t j = i; j < i + window; ++j)
+        for (size_t j = i; j < i + window; ++j)
             threshold += func[j];
         threshold = lambda * threshold / window + delta;
         if (func[i + window/2] <= threshold)

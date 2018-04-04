@@ -53,7 +53,7 @@ size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data,int
             max2 = i;
         }
     }
-    if (abs(max2 * 2 - maxValueIndex) < 4)
+    if (abs((int64_t)max2 * 2 - (int64_t)maxValueIndex) < 4)
     {
         if (result[max2]/result[maxValueIndex] > 0.2)
             maxValueIndex = max2;
@@ -64,7 +64,7 @@ size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data,int
 
 //this method finds a fundumental note using HPS
 //then removes it from spectrum and looks for next note
-//if next note isn't different from any priviously
+//if next note has lower energy than first
 //found note, algorithm stops
 std::map<QString, double> NoteDetector::findNotes(const FrequencyAudioData &freq, int maxNotes, int harmonics)
 {

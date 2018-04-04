@@ -24,10 +24,16 @@ TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, int wind
     }
     normalize(onsetFunction);
     smooth(onsetFunction, 6);
+    threshold(onsetFunction, 0.01, 1, 20);
+    std::set<size_t> peaks = findPeaks(onsetFunction);
 
-    auto peaks = findPeaks(onsetFunction, 0.01, 1, 14);
+    auto it = peaks.begin();
+    for ( ; it != peaks.end(); ++it)
+    {
+        onsetFunction[*it] = 1;
+    }
 
-    return TimeAudioData(peaks, timeData.getSampleRate()/overlap);
+    return TimeAudioData(onsetFunction, timeData.getSampleRate()/overlap);
 }
 
 double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const FrequencyAudioData &fft2)
@@ -49,7 +55,7 @@ double OnsetDetector::fftDifference(const FrequencyAudioData &fft1, const Freque
     return totalDiff;
 }
 
-std::vector<double> OnsetDetector::findPeaks(const std::vector<double> &func, double delta, double lambda, int window)
+void OnsetDetector::threshold(std::vector<double> &func, double delta, double lambda, int window)
 {
     if (window <= 0)
         window = 1;
@@ -58,16 +64,15 @@ std::vector<double> OnsetDetector::findPeaks(const std::vector<double> &func, do
     if (lambda < 0)
         lambda *= -1;
 
-    std::vector<double> peaks = func;
+    std::vector<double> input = func;
     for (size_t index = 0; index < func.size(); ++index)
     {
         size_t start = (index < window/2) ? 0 : index - window/2;
-        size_t end = (index + window/2 > func.size()) ? func.size() : index + window/2;
-        double threshold = delta + lambda * median(func, start, end);
-        if (func[index] < threshold)
-            peaks[index] = 0;
+        size_t end = (index + window/2 > input.size()) ? input.size() : index + window/2;
+        double threshold = delta + lambda * median(input, start, end);
+        if (input[index] < threshold)
+            func[index] = 0;
     }
-    return peaks;
 }
 
 void OnsetDetector::normalize(std::vector<double> &func)
@@ -130,4 +135,40 @@ double OnsetDetector::average(const std::vector<double> &func, size_t start, siz
     size_t n = end - start;
     ave /= n;
     return ave;
+}
+
+//this function is really primitive
+//peak finding can be done in more robust way
+//but for this task it's good enough
+std::set<size_t> OnsetDetector::findPeaks(std::vector<double> &func)
+{
+    std::set<size_t> result;
+    //if vector is empty return emty set
+    if (func.size() == 0)
+        return std::move(result);
+    size_t max = func.size() - 1;
+    func[max] = 0;
+    bool peak = false;
+
+    //look for local maximums of peaks separated by zeros
+    //this reduces false peak findings
+    for (size_t index = 0; index < func.size(); ++index)
+    {
+        if (func[index] <= 0.0 && !peak)
+            continue;
+        else if (func[index] <= 0.0 && peak)
+        {
+            peak = false;
+            result.insert(max);
+            max = 0;
+            continue;
+        }
+        else
+        {
+            peak = true;
+            if (func[index] > func[max])
+                max = index;
+        }
+    }
+    return std::move(result);
 }

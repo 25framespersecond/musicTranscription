@@ -10,9 +10,9 @@
 class NoteDetector
 {
 public:
-    static std::map<QString, double> findNotes(const FrequencyAudioData &data, unsigned int maxNotes = 6, unsigned int harmonics = 5);
+    static std::map<QString, double> findNotes(const FrequencyAudioData &data, int maxNotes = 6, int harmonics = 5);
 private:
-    static size_t harmonicProductSpectrum(const std::vector<double> &data, unsigned int harmonics);
+    static int64_t harmonicProductSpectrum(const std::vector<double> &data, int harmonics);
     static QString noteName(double frequancy);
 
     static const double f0;

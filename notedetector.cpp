@@ -19,12 +19,12 @@ QString NoteDetector::noteName(double frequancy)
     return string;
 }
 
-size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data, unsigned int harmonics)
+int64_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data, int harmonics)
 {
-    size_t maxIndex = data.size()/harmonics;
+    int64_t maxIndex = data.size()/harmonics;
     std::vector<double> result = data;
 
-    size_t maxValueIndex = 0;
+    int64_t maxValueIndex = 0;
 
     //if initial audio data contains any silence
     //then 0Hz frequency may be found as fundumental
@@ -33,9 +33,9 @@ size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data, un
 
     //multiplying frequency data by i-times downsampled version of itself
     //and also looking for max value of result
-    for (size_t i = 0; i < maxIndex; ++i)
+    for (int64_t i = 0; i < maxIndex; ++i)
     {
-        for (size_t j = 1; j <= harmonics; ++j)
+        for (int j = 1; j <= harmonics; ++j)
         {
             result[i] *= result[i*j];
         }
@@ -50,15 +50,20 @@ size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data, un
 //then removes it from spectrum and looks for next note
 //if next note isn't different from any priviously
 //found note, algorithm stops
-std::map<QString, double> NoteDetector::findNotes(const FrequencyAudioData &freq, unsigned int maxNotes, unsigned int harmonics)
+std::map<QString, double> NoteDetector::findNotes(const FrequencyAudioData &freq, int maxNotes, int harmonics)
 {
+    if(maxNotes <= 0)
+        maxNotes = 1;
+    if(harmonics <= 0)
+        harmonics = 1;
+
     std::map<QString, double> notes;
     std::vector<double> data = freq.getData();
     //maxNotes is used to avoid infinitely looking for notes
     double maxPower;
-    for (size_t i = 0; i < maxNotes; ++i)
+    for (int64_t i = 0; i < maxNotes; ++i)
     {
-        size_t fundBin = harmonicProductSpectrum(data, harmonics);
+        int64_t fundBin = harmonicProductSpectrum(data, harmonics);
         double fundFreq = fundBin * freq.getInterval();
         double power = data[fundBin];
         if (notes.size() == 0)
@@ -75,19 +80,19 @@ std::map<QString, double> NoteDetector::findNotes(const FrequencyAudioData &freq
         }
 
         //filtering fundamental frequency and its overtones
-        for (unsigned int harmon = 1; harmon <= harmonics; ++harmon)
+        for (int harmon = 1; harmon <= harmonics; ++harmon)
         {
             //TODO: remove magic numbers
-            size_t currentBin = harmon * fundBin;
-            size_t leftBound, rightBound;
-            if (currentBin >= 6)
-                leftBound = currentBin - 6;
-            else
+            int64_t currentBin = harmon * fundBin;
+            int64_t leftBound, rightBound;
+            leftBound = currentBin - 6;
+            if (leftBound < 0)
                 leftBound = 0;
+
             rightBound = currentBin + 7;
             if (rightBound > data.size())
                 rightBound = data.size();
-            for (size_t index = leftBound; index < rightBound; ++index)
+            for (int64_t index = leftBound; index < rightBound; ++index)
                 data[index] = 0;
         }
     }

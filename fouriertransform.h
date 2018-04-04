@@ -13,10 +13,10 @@ class FourierTransform
 public:
 
     //discrete fourier transform with O(N^2) of data in range [start, end)
-    static FrequencyAudioData dft(const TimeAudioData &data, size_t start, size_t end);
+    static FrequencyAudioData dft(const TimeAudioData &data, int64_t start, int64_t end);
 
     //Cooley-Tukey fast discrete fourier transform with O(NlogN) of data in range [start, end)
-    static FrequencyAudioData cooleyTukeyFFT(const TimeAudioData &data, size_t start, size_t end, unsigned int fftSizeFactor = 16);
+    static FrequencyAudioData cooleyTukeyFFT(const TimeAudioData &data, int64_t start, int64_t end, int fftSizeFactor = 16);
 
 private:
     static size_t reverseBitOrder(size_t a);

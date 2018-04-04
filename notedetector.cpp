@@ -35,12 +35,28 @@ size_t NoteDetector::harmonicProductSpectrum(const std::vector<double> &data,int
     //and also looking for max value of result
     for (size_t i = 0; i < maxIndex; ++i)
     {
-        for (size_t j = 1; j <= harmonics; ++j)
+        for (int j = 1; j <= harmonics; ++j)
         {
             result[i] *= result[i*j];
         }
         if (result[i] > result[maxValueIndex])
             maxValueIndex = i;
+    }
+
+    //correcting for octave too high errors
+    size_t max2 = 0;
+    size_t maxsearch = maxValueIndex * 3 / 4;
+    for (size_t i = 1; i < maxsearch; ++i)
+    {
+        if (result[i] > result[max2])
+        {
+            max2 = i;
+        }
+    }
+    if (abs(max2 * 2 - maxValueIndex) < 4)
+    {
+        if (result[max2]/result[maxValueIndex] > 0.2)
+            maxValueIndex = max2;
     }
 
     return maxValueIndex;

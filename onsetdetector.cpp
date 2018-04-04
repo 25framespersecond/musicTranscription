@@ -12,6 +12,7 @@ TimeAudioData OnsetDetector::detectOnset(const TimeAudioData &timeData, int wind
         overlap = window/2;
     if (overlap > window)
         overlap = window;
+    //detecting onset using spectral difference
     std::vector<double> onsetFunction;
     FrequencyAudioData prevFreq = FourierTransform::cooleyTukeyFFT(timeData, 0, window, 10);
     for (size_t index = overlap; index+window < timeData.size(); index += overlap)
